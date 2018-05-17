@@ -65,8 +65,9 @@
   </Target>
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
-    <Compile Include="Core.GraphTest.fs" />
     <Compile Include="ExtensionsTest.fs" />
+    <Compile Include="Core.GraphTest.fs" />
+    <Compile Include="Core.Population.RouletteTest.fs" />
     <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

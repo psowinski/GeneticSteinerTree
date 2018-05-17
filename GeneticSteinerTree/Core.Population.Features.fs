@@ -1,5 +1,6 @@
-﻿module GeneticSteinerTree.Core.Population
-open Genotype
+﻿module GeneticSteinerTree.Core.Population.Features
+open GeneticSteinerTree.Core.Data
+open GeneticSteinerTree.Core.Genotype
 
 let createPopulation canPassFork populationSize forks =
    let alignToEven x = if x % 2 = 0 then x else x + 1

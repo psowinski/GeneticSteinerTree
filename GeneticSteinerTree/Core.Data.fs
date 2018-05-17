@@ -11,6 +11,7 @@ type Genotype = | Genotype of Gene list
 type Population = | Population of Genotype list
 
 type Weight = float option
+type RankedPopulation<'Genotype> = | RankedPopulation of ('Genotype * Weight) list
 
 type RankingFunc = Gene seq -> Weight
 
