@@ -67,6 +67,7 @@
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="ExtensionsTest.fs" />
     <Compile Include="Core.GraphTest.fs" />
+    <Compile Include="Core.GenotypeTest.fs" />
     <Compile Include="Core.Population.RouletteTest.fs" />
     <Content Include="packages.config" />
   </ItemGroup>

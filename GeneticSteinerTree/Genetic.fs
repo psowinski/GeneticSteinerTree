@@ -8,6 +8,11 @@ let private createRandNext () =
    let randNext range = rnd.Next(range)
    randNext
 
+let private calculateForkPassProbability countForks countTerminals = 
+   let probability = min ((float)countTerminals / (float)(countForks + countTerminals)) 0.5
+   let parcent = (int)(probability * 100.0 + 0.5)
+   parcent
+
 let calculate (getEdgeCost: Vertex * Vertex -> Weight) (forks: Vertex seq) (terminals: Vertex seq) iterations =
    ()
 
@@ -18,10 +23,10 @@ let createPopulation populationSize (forks: Vertex seq) countTerminals =
    let canPassForkRandom _ = randNext(100) < prob
    createPopulation canPassForkRandom populationSize forks
 
-[<CompiledName("EvaluatePopulation")>]
-let evaluatePopulation ranker iterations population =
-   evaluatePopulation (createRandNext ()) ranker iterations population   
+//[<CompiledName("EvaluatePopulation")>]
+//let evaluatePopulation ranker iterations population =
+//   Population.evaluatePopulation (createRandNext ()) ranker iterations population   
 
-[<CompiledName("GetTopSolution")>]
-let getTopSolution population =
-   getTopSolution population
+//[<CompiledName("GetTopSolution")>]
+//let getTopSolution population =
+//   Population.getTopSolution population

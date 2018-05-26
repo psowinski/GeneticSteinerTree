@@ -1,60 +1,57 @@
 ﻿module GeneticSteinerTree.Core.Population.Features
-open GeneticSteinerTree.Core.Data
-open GeneticSteinerTree.Core.Genotype
+open GeneticSteinerTree.Core
+open Data
+open Genotype
+open Graph
+open Population.Roulette
+open Population.Operators
+open Microsoft.FSharp
 
-let createPopulation canPassFork populationSize forks =
+let createPopulation canPassForkRnd populationSize forks =
    let alignToEven x = if x % 2 = 0 then x else x + 1
    let size = if populationSize < 2 then 2 else (alignToEven populationSize)
+   let genotypes = List.init size (fun _ -> createGenotype canPassForkRnd forks)
+   Population genotypes
 
-   { 1 .. size }
-   |> Seq.map (fun _ -> createGenotype canPassFork forks)
-   |> List.ofSeq 
+let getGenotypeCost getEdgeWeight (terminals: Vertex list) (Genotype genes): Weight = 
+   let cost = genes |> List.choose (function | Active v -> Some v | _ -> None)
+                    |> getSteinerTreeByMinimalSpanningTree getEdgeWeight terminals
+                    |> Option.map (List.fold (fun acc (u, v, w) -> acc + w) 0.0)
+   cost
+
+let private rankPopulation getGenotypeCost (Population genotypes) =
+   genotypes 
+   |> List.map (fun genotype -> genotype, getGenotypeCost genotype) 
+   |> RankedPopulation
+
+let private bestForWorst (RankedPopulation p1) (RankedPopulation p2) =
+   List.append p1 p2
+   |> List.sortBy (fun (g, w) -> match w with
+                                 | Some v -> v
+                                 | _ -> Core.float.MaxValue)
+   |> List.take (List.length p1)
+
+let nextPopulation getGenotypeCost selectParents crossPopulation mutatePopulation population =
+   let rankPopulation = rankPopulation getGenotypeCost
+   let current = rankPopulation population
+   let next = selectParents >> crossPopulation >> mutatePopulation >> rankPopulation >> bestForWorst current
+
+   current 
+   |> next 
+   |> List.map (fun (g, w) -> g) 
    |> Population
 
-let calculateForkPassProbability countForks countTerminals = 
-   let probability = min ((float)countTerminals / (float)(countForks + countTerminals)) 0.5
-   let parcent = (int)(probability * 100.0 + 0.5)
-   parcent
-
-let selectParents randNext (Population genotypes) = 
-   genotypes |> List.sortBy (fun _ -> randNext(System.Int32.MaxValue))
-             |> List.chunkBySize 2
-             |> List.map (fun x -> x.[0], x.[1])
-
-let crossPopulation randNext (parents: (Genotype * Genotype) list) = 
-   let genotypeLength = (fst parents.Head) |> fun (Genotype genes) -> List.length genes
-   let crossPoint () = randNext(genotypeLength) + 1
-
-   let crossedPopulation =
-      parents  |> List.collect (fun pair -> geneCrossing (crossPoint ()) (fst pair) (snd pair))
-               |> Population
-   crossedPopulation
-
-let mutatePopulation randNext (Population genotypes) = 
-   let mutateNow () = randNext(100) < 1
-   let mutatedPopulation =
-      genotypes |> List.map (geneMutation mutateNow) |> Population
-   mutatedPopulation
-
-let rankPopulation (ranker: RankingFunc) (Population genotypes) =
-   let rankedPopulation =
-      genotypes |> List.sortBy (fun (Genotype genes) -> ranker genes)
-                |> Population
-   rankedPopulation
-
-let getTopSolution (Population genotypes)=
-   genotypes |> List.head |> getGenotypeIdentifiers
-
-let createNextPopulation randNext ranker population =
-   population |> (selectParents randNext)
-              |> (crossPopulation randNext)
-              |> (mutatePopulation randNext)
-              |> (rankPopulation ranker)
-
-let evaluatePopulation randNext ranker iterations population =
-   let createNextPopulation = createNextPopulation randNext ranker
-   let rec processPopulation iterations population =
-      if iterations > 0
-      then processPopulation (iterations - 1) (createNextPopulation population)
+let evaluatePopulation nextPopulation iterations population =
+   let rec processPopulation iteration population =
+      if iteration > 0
+      then processPopulation (iteration - 1) (nextPopulation population)
       else population
    processPopulation iterations population
+
+let evaluatePopulationFactory randNext getEdgeWeight terminals =
+   let cost = getGenotypeCost getEdgeWeight terminals
+   let select = selectParents (rouletteSelection randNext 100000)
+   let cross = crossPopulation randNext
+   let mutate = mutatePopulation randNext
+   let next = nextPopulation cost select cross mutate
+   evaluatePopulation next
