@@ -56,9 +56,9 @@
     <Compile Include="Core.Data.fs" />
     <Compile Include="Core.Graph.fs" />
     <Compile Include="Core.Genotype.fs" />
-    <Compile Include="Core.Population.Roulette.fs" />
-    <Compile Include="Core.Population.Operators.fs" />
-    <Compile Include="Core.Population.Features.fs" />
+    <Compile Include="Core.Roulette.fs" />
+    <Compile Include="Core.PopulationOperators.fs" />
+    <Compile Include="Core.PopulationFeatures.fs" />
     <Compile Include="Genetic.fs" />
   </ItemGroup>
   <ItemGroup>

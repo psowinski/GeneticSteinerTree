@@ -1,7 +1,6 @@
-﻿module GeneticSteinerTreeTests.Core.Population.RouletteShould
+﻿module GeneticSteinerTreeTests.Core.RouletteShould
 open GeneticSteinerTree.Core
 open Data
-open GeneticSteinerTree.Core.Population
 open Roulette
 open Xunit
 open System

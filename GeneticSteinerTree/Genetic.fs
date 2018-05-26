@@ -1,7 +1,8 @@
 ﻿module GeneticSteinerTree.Genetic
-open GeneticSteinerTree.Core
-open Genotype
-open Population.Features
+open GeneticSteinerTree.Core.PopulationFeatures
+open GeneticSteinerTree.Core.Genotype
+open GeneticSteinerTree.Core.Data
+
 
 let private createRandNext () =
    let rnd = System.Random()
@@ -21,7 +22,7 @@ let createPopulation populationSize (forks: Vertex seq) countTerminals =
    let randNext = createRandNext ()
    let prob = calculateForkPassProbability (forks |> Seq.length) countTerminals
    let canPassForkRandom _ = randNext(100) < prob
-   createPopulation canPassForkRandom populationSize forks
+   Population.createPopulation canPassForkRandom populationSize forks
 
 //[<CompiledName("EvaluatePopulation")>]
 //let evaluatePopulation ranker iterations population =

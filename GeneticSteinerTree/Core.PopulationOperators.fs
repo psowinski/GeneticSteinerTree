@@ -1,4 +1,4 @@
-﻿module GeneticSteinerTree.Core.Population.Operators
+﻿module GeneticSteinerTree.Core.PopulationOperators.Population
 open GeneticSteinerTree.Core
 open Data
 open Genotype
@@ -24,7 +24,7 @@ let createCrossPopulation crosser probability randNext parents =
                |> Population
    crossedPopulation
 
-let crossPopulation probability randNext parents = 
+let cross probability randNext parents = 
    createCrossPopulation Genotype.cross probability randNext parents
 
 let createMutatePopulation mutator probability randNext (Population genotypes) = 
@@ -39,5 +39,5 @@ let createMutatePopulation mutator probability randNext (Population genotypes) =
       genotypes |> List.map mutation |> Population
    mutatedPopulation
 
-let mutatePopulation probability randNext population = 
+let mutate probability randNext population = 
    createMutatePopulation Genotype.mutate probability randNext population

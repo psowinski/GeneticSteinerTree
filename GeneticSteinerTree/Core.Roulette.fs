@@ -1,4 +1,4 @@
-﻿module GeneticSteinerTree.Core.Population.Roulette
+﻿module GeneticSteinerTree.Core.Roulette
 open GeneticSteinerTree.Core.Data
 
 let private createWeightToRange range (RankedPopulation rankedGenotypes) = 

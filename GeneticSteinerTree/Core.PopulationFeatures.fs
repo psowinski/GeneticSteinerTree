@@ -1,10 +1,10 @@
-﻿module GeneticSteinerTree.Core.Population.Features
+﻿module GeneticSteinerTree.Core.PopulationFeatures.Population
+open GeneticSteinerTree.Core.PopulationOperators
 open GeneticSteinerTree.Core
 open Data
 open Genotype
 open Graph
-open Population.Roulette
-open Population.Operators
+open Roulette
 open Microsoft.FSharp
 
 let createPopulation canPassForkRnd populationSize forks =
@@ -50,8 +50,8 @@ let evaluatePopulation nextPopulation iterations population =
 
 let evaluatePopulationFactory randNext getEdgeWeight terminals =
    let cost = getGenotypeCost getEdgeWeight terminals
-   let select = selectParents (Roulette.run randNext 100000)
-   let cross = crossPopulation 0.95 randNext
-   let mutate = mutatePopulation 0.05 randNext
+   let select = Population.selectParents (Roulette.run randNext 100000)
+   let cross = Population.cross 0.95 randNext
+   let mutate = Population.mutate 0.05 randNext
    let next = nextPopulation cost select cross mutate
    evaluatePopulation next
