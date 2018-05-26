@@ -1,4 +1,4 @@
-﻿module GeneticSteinerTreeTests.Core.PopulationRouletteTest
+﻿module GeneticSteinerTreeTests.Core.Population.RouletteShould
 open GeneticSteinerTree.Core.Data
 open GeneticSteinerTree.Core.Population.Roulette
 open Xunit

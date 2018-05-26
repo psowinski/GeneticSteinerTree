@@ -1,4 +1,4 @@
-﻿module GeneticSteinerTreeTests.Core.Population.OperatorsTest
+﻿module GeneticSteinerTreeTests.Core.Population.OperatorsShould
 open GeneticSteinerTree.Core.Data
 open GeneticSteinerTree.Core.Population.Operators
 open Xunit

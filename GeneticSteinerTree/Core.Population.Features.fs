@@ -10,7 +10,7 @@ open Microsoft.FSharp
 let createPopulation canPassForkRnd populationSize forks =
    let alignToEven x = if x % 2 = 0 then x else x + 1
    let size = if populationSize < 2 then 2 else (alignToEven populationSize)
-   let genotypes = List.init size (fun _ -> createGenotype canPassForkRnd forks)
+   let genotypes = List.init size (fun _ -> Genotype.create canPassForkRnd forks)
    Population genotypes
 
 let getGenotypeCost getEdgeWeight (terminals: Vertex list) (Genotype genes): Weight = 

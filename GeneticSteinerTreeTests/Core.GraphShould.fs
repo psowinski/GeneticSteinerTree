@@ -1,4 +1,4 @@
-﻿module GeneticSteinerTreeTests.Core.GraphTest
+﻿module GeneticSteinerTreeTests.Core.GraphShould
 open GeneticSteinerTree.Core.Data
 open GeneticSteinerTree.Core.Graph
 open Xunit

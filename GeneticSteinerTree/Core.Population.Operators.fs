@@ -25,7 +25,7 @@ let createCrossPopulation crosser probability randNext parents =
    crossedPopulation
 
 let crossPopulation probability randNext parents = 
-   createCrossPopulation crossGenotypes probability randNext parents
+   createCrossPopulation Genotype.cross probability randNext parents
 
 let createMutatePopulation mutator probability randNext (Population genotypes) = 
    let probability = int(probability * 10000.0)
@@ -40,4 +40,4 @@ let createMutatePopulation mutator probability randNext (Population genotypes) =
    mutatedPopulation
 
 let mutatePopulation probability randNext population = 
-   createMutatePopulation mutateGenotype probability randNext population
+   createMutatePopulation Genotype.mutate probability randNext population

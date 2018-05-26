@@ -1,4 +1,4 @@
-﻿module GeneticSteinerTreeTests.ExtensionsTest
+﻿module GeneticSteinerTreeTests.ExtensionsShould
 open GeneticSteinerTree.Extensions
 open Xunit
 

@@ -65,12 +65,12 @@
   </Target>
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
-    <Compile Include="ExtensionsTest.fs" />
-    <Compile Include="Core.GraphTest.fs" />
-    <Compile Include="Core.GenotypeTest.fs" />
-    <Compile Include="Core.Population.RouletteTest.fs" />
+    <Compile Include="ExtensionsShould.fs" />
+    <Compile Include="Core.GraphShould.fs" />
+    <Compile Include="Core.GenotypeShould.fs" />
+    <Compile Include="Core.Population.RouletteShould.fs" />
     <Content Include="packages.config" />
-    <Compile Include="Core.Population.OperatorsTest.fs" />
+    <Compile Include="Core.Population.OperatorsShould.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />
