@@ -44,9 +44,9 @@ let ``Roulette should be split to all invalid if none is valid`` () =
 let ``Running roulette should select elements acording to weight`` (element, rndValue) = 
    let expected = List.init 3 (fun _ -> element)
    let population = RankedPopulation [(1, Some 33.0); (2, Some 33.0); (3, Some 33.0)]
-   let actual = rouletteSelection (fun _ -> rndValue) 100 population
+   let actual = rouletteSelection 100 (fun _ -> rndValue) population
    Assert.Equal<int list>(expected, actual)
 
 [<Fact>]
 let ``Running roulette should not work on precision less then 100`` () = 
-   Assert.Throws<Exception>(fun () -> rouletteSelection (fun _ -> 0) 1 (RankedPopulation []) |> ignore)
+   Assert.Throws<Exception>(fun () -> rouletteSelection 1 (fun _ -> 0) (RankedPopulation []) |> ignore)

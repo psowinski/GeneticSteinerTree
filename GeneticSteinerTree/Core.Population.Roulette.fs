@@ -36,7 +36,7 @@ let createRoulette range (RankedPopulation rankedGenotypes) =
                                   |> roundHeadToEndOfRange
    roulette
 
-let rouletteSelection randNext precision (RankedPopulation rankedGenotypes) =
+let rouletteSelection precision randNext (RankedPopulation rankedGenotypes) =
    if precision < 100 then failwith "Too low precision, should be >= 100"
 
    let populationSize = List.length rankedGenotypes
