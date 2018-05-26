@@ -18,7 +18,12 @@ let private createWeightToRange range (RankedPopulation rankedGenotypes) =
    | Some w -> int (w * rangeUnit + 0.5) 
    | None -> noneRange
 
-let createRoulette range (RankedPopulation rankedGenotypes) =
+type private Range = int
+type private From = int
+type private To = int
+type Roulette<'T> = | Roulette of (('T * From * To) list) * Range
+
+let create range (RankedPopulation rankedGenotypes) =
    let roundHeadToEndOfRange list = match list with
                                     | [] -> []
                                     | (g, f, t)::xs -> if t = range then list else (g, f, range)::xs
@@ -34,17 +39,20 @@ let createRoulette range (RankedPopulation rankedGenotypes) =
                                                []
                                   |> List.ofSeq
                                   |> roundHeadToEndOfRange
-   roulette
+   Roulette (roulette, range)
 
-let rouletteSelection precision randNext (RankedPopulation rankedGenotypes) =
-   if precision < 100 then failwith "Too low precision, should be >= 100"
-
-   let populationSize = List.length rankedGenotypes
-   let roulette = createRoulette precision (RankedPopulation rankedGenotypes)
+let select randNext count (Roulette (roulette, range)) =
    let runRoulette _ = 
-      let winValue = randNext(precision)
+      let winValue = randNext range
       List.find (fun (g, fromRange, toRange) -> fromRange <= winValue && winValue < toRange) roulette
       |> function | (g, _, _) -> g
-
-   let selected = List.init populationSize runRoulette
+   let selected = List.init count runRoulette
    selected
+
+let createRun create select randNext range (RankedPopulation rankedGenotypes) =
+   let count = List.length rankedGenotypes
+   create range (RankedPopulation rankedGenotypes) 
+   |> select randNext count
+
+let run randNext range rankedPopulation =
+   createRun create select randNext range rankedPopulation

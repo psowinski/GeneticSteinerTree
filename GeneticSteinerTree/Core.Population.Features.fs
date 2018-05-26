@@ -50,7 +50,7 @@ let evaluatePopulation nextPopulation iterations population =
 
 let evaluatePopulationFactory randNext getEdgeWeight terminals =
    let cost = getGenotypeCost getEdgeWeight terminals
-   let select = selectParents (rouletteSelection 100000 randNext)
+   let select = selectParents (Roulette.run randNext 100000)
    let cross = crossPopulation 0.95 randNext
    let mutate = mutatePopulation 0.05 randNext
    let next = nextPopulation cost select cross mutate
