@@ -21,9 +21,7 @@ let ``Cross genotypes in specified point`` () =
    Assert.Equal<Genotype>(expected, actual)
 
 [<Fact>]
-let ``Mutate genotype by function`` () = 
-   let expected = Genotype [Inactive "a"; Inactive "b"; Inactive "c"]
-   let genotype = Genotype [Active "a"; Inactive "b"; Active "c"]
-   let mutator = function | Active _ -> true | _ -> false
-   let actual = mutateGenotype mutator genotype
+let ``Mutate genotype in specified point`` () = 
+   let expected = Genotype [Active "a"; Inactive "b"; Inactive "c"]
+   let actual = mutateGenotype 2 (Genotype [Active "a"; Inactive "b"; Active "c"])
    Assert.Equal<Genotype>(expected, actual)

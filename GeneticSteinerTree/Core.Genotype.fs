@@ -8,19 +8,22 @@ let createGenotype activator genes =
       else Inactive gene
    genes |> Seq.map createGene |> List.ofSeq |> Genotype
 
-let crossGenotypes crossPoint (Genotype firstGenes) (Genotype secondGenes) =
+let crossGenotypes position (Genotype firstGenes) (Genotype secondGenes) =
    [
-      (List.take crossPoint firstGenes) @ (List.skip crossPoint secondGenes) |> Genotype
-      (List.take crossPoint secondGenes) @ (List.skip crossPoint firstGenes) |> Genotype
+      (List.take position firstGenes) @ (List.skip position secondGenes) |> Genotype
+      (List.take position secondGenes) @ (List.skip position firstGenes) |> Genotype
    ]
 
 /// mutator - returns true if gene should be reverted, otherwise false
-let mutateGenotype mutator (Genotype genes) = 
+let mutateGenotype position (Genotype genes) = 
    let revert = function
       | Active v -> Inactive v
       | Inactive v -> Active v
 
-   let mutate gene =
-      if mutator gene then revert gene else gene
+   let mutator idx gene =
+      if idx = position then revert gene else gene
 
-   genes |> List.map mutate |> Genotype
+   genes |> List.mapi mutator |> Genotype
+
+let length (Genotype genes) =
+   List.length genes
