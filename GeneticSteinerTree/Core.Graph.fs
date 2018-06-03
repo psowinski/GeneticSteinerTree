@@ -86,18 +86,19 @@ let reduceGraph (getDeadends: Graph -> Vertex list) (edges: Graph) =
       else edges
    reduce edges
 
-let createGetSteinerTreeByMinimalSpanningTree combinationsWithoutRepetition2ofN createGraph addTerminalsToGraph reduceGraph minimalSpanigTree =
+let getSteinerTree combinationsWithoutRepetition2ofN createGraph addTerminalsToGraph reduceGraph minimalSpanigTree =
    combinationsWithoutRepetition2ofN
    >> createGraph
    >> addTerminalsToGraph
    >> Option.map reduceGraph
    >> Option.bind minimalSpanigTree
 
-let getSteinerTreeByMinimalSpanningTree getEdgeWeight terminals vertices =
-   createGetSteinerTreeByMinimalSpanningTree 
-      combinationsWithoutRepetition2ofN 
-      (createGraph getEdgeWeight)
-      (addTerminalsToGraph getEdgeWeight terminals)
-      (reduceGraph (getDeadends terminals))
-      minimalSpanigTree 
-      vertices
+module Factory =
+   let createGetSteinerTree getEdgeWeight terminals vertices =
+      getSteinerTree
+         combinationsWithoutRepetition2ofN 
+         (createGraph getEdgeWeight)
+         (addTerminalsToGraph getEdgeWeight terminals)
+         (reduceGraph (getDeadends terminals))
+         minimalSpanigTree 
+         vertices

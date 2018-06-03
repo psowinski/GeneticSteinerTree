@@ -1,6 +1,6 @@
 ﻿module GeneticSteinerTree.Core.Roulette
 
-let private createWeightToRange range (RankedPopulation rankedGenotypes) = 
+let private weightToRange range (RankedPopulation rankedGenotypes) = 
    let totalWeight = 
       rankedGenotypes 
       |> Seq.fold (fun acc (_, w) -> acc + (function | Some w -> w | _ -> 0.0) w) 0.0
@@ -27,7 +27,7 @@ let create range (RankedPopulation rankedGenotypes) =
                                     | [] -> []
                                     | (g, f, t)::xs -> if t = range then list else (g, f, range)::xs
 
-   let weightToRange = createWeightToRange range (RankedPopulation rankedGenotypes)
+   let weightToRange = weightToRange range (RankedPopulation rankedGenotypes)
 
    let roulette = rankedGenotypes |> Seq.map (fun (g, w) -> g, weightToRange w)
                                   |> Seq.filter (fun (_, range) -> range > 0)
@@ -48,10 +48,11 @@ let select randNext count (Roulette (roulette, range)) =
    let selected = List.init count runRoulette
    selected
 
-let createRun create select randNext range (RankedPopulation rankedGenotypes) =
+let run create select randNext range (RankedPopulation rankedGenotypes) =
    let count = List.length rankedGenotypes
    create range (RankedPopulation rankedGenotypes) 
    |> select randNext count
 
-let run randNext range rankedPopulation =
-   createRun create select randNext range rankedPopulation
+module Factory =
+   let createRun randNext range rankedPopulation =
+      run create select randNext range rankedPopulation

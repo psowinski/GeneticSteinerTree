@@ -13,9 +13,11 @@ let createPopulation canPassForkRnd populationSize forks =
    let genotypes = List.init size (fun _ -> Genotype.create canPassForkRnd forks)
    Population genotypes
 
+let private getSteinerTree = Factory.createGetSteinerTree
+
 let getGenotypeCost getEdgeWeight (terminals: Vertex list) (Genotype genes): Weight = 
    let cost = genes |> List.choose (function | Active v -> Some v | _ -> None)
-                    |> getSteinerTreeByMinimalSpanningTree getEdgeWeight terminals
+                    |> getSteinerTree getEdgeWeight terminals
                     |> Option.map (List.fold (fun acc (u, v, w) -> acc + w) 0.0)
    cost
 
@@ -50,8 +52,9 @@ let evaluatePopulation nextPopulation iterations population =
 
 let evaluatePopulationFactory randNext getEdgeWeight terminals =
    let cost = getGenotypeCost getEdgeWeight terminals
-   let select = Population.selectParents (Roulette.run randNext 100000)
-   let cross = Population.cross 0.95 randNext
-   let mutate = Population.mutate 0.05 randNext
+   let runRoulette = Roulette.Factory.createRun randNext 100000
+   let select = Population.selectParents runRoulette
+   let cross = Population.Factory.createCross 0.95 randNext
+   let mutate = Population.Factory.createMutate 0.05 randNext
    let next = nextPopulation cost select cross mutate
    evaluatePopulation next

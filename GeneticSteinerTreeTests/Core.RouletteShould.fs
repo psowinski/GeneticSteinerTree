@@ -57,5 +57,6 @@ let ``Select should choose items by provided function`` (element, rndValue) =
 let ``Running roulette should select elements acording to weight`` (element, rndValue) = 
    let expected = List.init 3 (fun _ -> element)
    let population = RankedPopulation [(1, Some 33.0); (2, Some 33.0); (3, Some 33.0)]
-   let actual = Roulette.run (fun _ -> rndValue) 100 population
+   let runRoulette = Roulette.Factory.createRun (fun _ -> rndValue) 100
+   let actual = runRoulette population
    Assert.Equal<int list>(expected, actual)

@@ -6,7 +6,7 @@ let selectParents selector population =
               |> List.chunkBySize 2
               |> List.map (fun x -> x.[0], x.[1])
 
-let createCross crosser probability randNext parents = 
+let cross crosser probability randNext parents = 
    let probability = int(probability * 10000.0)
    let genotypeLength = parents |> List.head
                                 |> fst
@@ -22,10 +22,7 @@ let createCross crosser probability randNext parents =
                |> Population
    crossedPopulation
 
-let cross probability randNext parents = 
-   createCross Genotype.cross probability randNext parents
-
-let createMutate mutator probability randNext (Population genotypes) = 
+let mutate mutator probability randNext (Population genotypes) = 
    let probability = int(probability * 10000.0)
    let genotypeLength = genotypes |> List.head |> Genotype.length
    let mutation genotype = 
@@ -37,5 +34,10 @@ let createMutate mutator probability randNext (Population genotypes) =
       genotypes |> List.map mutation |> Population
    mutatedPopulation
 
-let mutate probability randNext population = 
-   createMutate Genotype.mutate probability randNext population
+module Factory =
+   let createCross probability randNext parents = 
+      cross Genotype.cross probability randNext parents
+
+   let createMutate probability randNext population = 
+      mutate Genotype.mutate probability randNext population
+   
