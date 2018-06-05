@@ -48,11 +48,11 @@ let select randNext count (Roulette (roulette, range)) =
    let selected = List.init count runRoulette
    selected
 
-let run create select randNext range (RankedPopulation rankedGenotypes) =
-   let count = List.length rankedGenotypes
-   create range (RankedPopulation rankedGenotypes) 
-   |> select randNext count
+let run create select randNext range rankedPopulation count =
+   let roulette = create range rankedPopulation 
+   let generated = roulette |> select randNext count
+   generated
 
 module Factory =
-   let createRun randNext range rankedPopulation =
-      run create select randNext range rankedPopulation
+   let createRun randNext range rankedPopulation count =
+      run create select randNext range rankedPopulation count

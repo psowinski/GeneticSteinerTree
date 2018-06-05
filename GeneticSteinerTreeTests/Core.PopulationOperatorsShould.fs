@@ -6,12 +6,12 @@ open Xunit
 [<Fact>]
 let ``Select parents by selector`` () = 
    let expected = [Genotype [Active "a"], Genotype [Active "c"]]
-   let pop = Population [ Genotype [Active "a"];
-                          Genotype [Active "b"];
-                          Genotype [Active "c"];
-                          Genotype [Active "d"]]
+   let pop = RankedPopulation [ Genotype [Active "a"], Some 1.0;
+                                Genotype [Active "b"], Some 1.0;
+                                Genotype [Active "c"], Some 1.0;
+                                Genotype [Active "d"], Some 1.0]
 
-   let actual = Population.selectParents (fun (Population list) -> [list.[0]; list.[2]]) pop
+   let actual = Population.selectParents (fun (RankedPopulation list) _ -> [fst list.[0]; fst list.[2]]) pop
    Assert.Equal<(Genotype * Genotype) list>(expected, actual)
 
 [<Fact>]

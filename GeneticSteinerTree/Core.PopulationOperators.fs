@@ -1,10 +1,13 @@
 ﻿module GeneticSteinerTree.Core.PopulationOperators.Population
 open GeneticSteinerTree.Core
 
+module RankedPopulation =
+   let length (RankedPopulation list) = List.length list
+
 let selectParents selector population = 
-   population |> selector
-              |> List.chunkBySize 2
-              |> List.map (fun x -> x.[0], x.[1])
+   selector population (RankedPopulation.length population)
+   |> List.chunkBySize 2
+   |> List.map (fun x -> x.[0], x.[1])
 
 let cross crosser probability randNext parents = 
    let probability = int(probability * 10000.0)

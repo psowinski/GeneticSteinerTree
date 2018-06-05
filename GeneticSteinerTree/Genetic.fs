@@ -1,28 +1,27 @@
 ﻿module GeneticSteinerTree.Genetic
-open GeneticSteinerTree.Core.PopulationFeatures
-open GeneticSteinerTree.Core.Genotype
 open GeneticSteinerTree.Core.Data
+open GeneticSteinerTree.Core.PopulationProcessing
 
+module private Utilities =
+   let createRandNext () =
+      let rnd = System.Random()
+      let randNext range = rnd.Next(range)
+      randNext
 
-let private createRandNext () =
-   let rnd = System.Random()
-   let randNext range = rnd.Next(range)
-   randNext
+   let parcentProbabilityOfGeneActivation countForks countTerminals = 
+      let probability = min ((float)countTerminals / (float)(countForks + countTerminals)) 0.5
+      let parcent = (int)(probability * 100.0 + 0.5)
+      parcent
 
-let private calculateForkPassProbability countForks countTerminals = 
-   let probability = min ((float)countTerminals / (float)(countForks + countTerminals)) 0.5
-   let parcent = (int)(probability * 100.0 + 0.5)
-   parcent
+[<CompiledName("CreatePopulation")>]
+let createPopulation populationSize (vertices: Vertex seq) countTerminals = 
+   let randNext = Utilities.createRandNext ()
+   let prob = Utilities.parcentProbabilityOfGeneActivation (vertices |> Seq.length) countTerminals
+   let geneActivator _ = randNext(100) < prob
+   Population.createPopulation geneActivator vertices populationSize
 
 let calculate (getEdgeCost: Vertex * Vertex -> Weight) (forks: Vertex seq) (terminals: Vertex seq) iterations =
    ()
-
-[<CompiledName("CreatePopulation")>]
-let createPopulation populationSize (forks: Vertex seq) countTerminals = 
-   let randNext = createRandNext ()
-   let prob = calculateForkPassProbability (forks |> Seq.length) countTerminals
-   let canPassForkRandom _ = randNext(100) < prob
-   Population.createPopulation canPassForkRandom populationSize forks
 
 //[<CompiledName("EvaluatePopulation")>]
 //let evaluatePopulation ranker iterations population =
