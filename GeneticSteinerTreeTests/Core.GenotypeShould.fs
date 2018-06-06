@@ -26,3 +26,9 @@ let ``Mutate genotype in specified point`` () =
    let expected = Genotype [Active "a"; Inactive "b"; Inactive "c"]
    let actual = Genotype.mutate 2 (Genotype [Active "a"; Inactive "b"; Active "c"])
    Assert.Equal<Genotype>(expected, actual)
+
+[<Fact>]
+let ``Return active genes in list`` () = 
+   let expected = ["a"; "c"]
+   let actual = Genotype.activeGenes (Genotype [Active "a"; Inactive "b"; Active "c"])
+   Assert.Equal<Vertex list>(expected, actual)

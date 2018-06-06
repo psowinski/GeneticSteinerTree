@@ -2,12 +2,12 @@
 open GeneticSteinerTree.Core.Graph
 
 /// activator - returns true if vertex should be active gene otherwise false
-let create activator genes =
-   let createGene gene =
-      if activator gene 
-      then Active gene 
-      else Inactive gene
-   genes |> Seq.map createGene |> List.ofSeq |> Genotype
+let create activator vertices =
+   let createGene vertex =
+      if activator vertex 
+      then Active vertex 
+      else Inactive vertex
+   vertices |> Seq.map createGene |> List.ofSeq |> Genotype
 
 let cross position (Genotype firstGenes) (Genotype secondGenes) =
    [

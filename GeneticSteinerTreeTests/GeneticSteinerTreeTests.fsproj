@@ -67,6 +67,8 @@
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="ExtensionsShould.fs" />
     <Compile Include="Core.GraphShould.fs" />
+    <Compile Include="Core.MinimalSpaningTreeShould.fs" />
+    <Compile Include="Core.SteinerTreeShould.fs" />
     <Compile Include="Core.GenotypeShould.fs" />
     <Compile Include="Core.RouletteShould.fs" />
     <Content Include="packages.config" />

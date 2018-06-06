@@ -55,6 +55,8 @@
     <Compile Include="Extensions.fs" />
     <Compile Include="Core.Data.fs" />
     <Compile Include="Core.Graph.fs" />
+    <Compile Include="Core.MinimalSpaningTree.fs" />
+    <Compile Include="Core.SteinerTree.fs" />
     <Compile Include="Core.Genotype.fs" />
     <Compile Include="Core.Roulette.fs" />
     <Compile Include="Core.PopulationOperators.fs" />
