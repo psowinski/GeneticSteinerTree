@@ -16,3 +16,4 @@ type RankedPopulation<'Genotype> = | RankedPopulation of ('Genotype * Weight) li
 type RankingFunc = Gene seq -> Weight
 
 type Graph = (Vertex * Vertex * float) list
+type SteinerTree = Graph option

@@ -3,59 +3,56 @@ open GeneticSteinerTree.Core.PopulationOperators
 open GeneticSteinerTree.Core
 open Data
 open Genotype
-open Graph
+open GeneticSteinerTree.Core.Graph
 open Roulette
 open Microsoft.FSharp
 
-let createPopulation geneActivator genes size =
+let create geneActivator genes size =
    let alignToEven x = if x % 2 = 0 then x else x + 1
    let size = if size < 2 then 2 else (alignToEven size)
    let genotypes = List.init size (fun _ -> Genotype.create geneActivator genes)
    Population genotypes
 
-let getGenotypeCost getSteinerTree (Genotype genes): Weight = 
-   let cost = genes |> List.choose (function | Active v -> Some v | _ -> None)
-                    |> getSteinerTree
-                    |> Option.map (List.fold (fun acc (_, _, w) -> acc + w) 0.0)
-   cost
-
-let rankPopulation getGenotypeCost (Population genotypes) =
+let rank genotypeCost (Population genotypes) =
    genotypes 
-   |> List.map (fun genotype -> genotype, getGenotypeCost genotype) 
+   |> List.map (fun genotype -> genotype, genotypeCost genotype) 
    |> RankedPopulation
 
 let bestForWorst (RankedPopulation current) (RankedPopulation next) =
    List.append current next
-   |> List.sortBy (fun (g, w) -> match w with
+   |> List.sortBy (fun (_, w) -> match w with
                                  | Some v -> v
                                  | _ -> Core.float.MaxValue)
    |> List.take (List.length current)
 
-let geneticAlgorithm select cross mutate rank =
-   select >> cross >> mutate >> rank
-
-let nextPopulation rankPopulation algorithm selectBests population =
-   let ranked = rankPopulation population
+let next ranker algorithm bestsSelector population =
+   let ranked = population |> ranker
    ranked 
    |> algorithm 
-   |> selectBests ranked
-   |> List.map (fun (g, _) -> g) 
+   |> bestsSelector ranked
+   |> List.map (fun (genotype, _) -> genotype) 
    |> Population
 
-let evaluatePopulation nextPopulation iterations population =
+let evaluate next iterations population =
    let final = seq { 1 .. iterations }
-               |> Seq.fold (fun acc _ -> nextPopulation acc) population
+               |> Seq.fold (fun acc _ -> next acc) population
    final
 
 module Factory = 
-   let createEvaluatePopulation randNext getEdgeWeight terminals =
-      let getSteinerTree = Factory.createGetSteinerTree getEdgeWeight terminals
-      let getCost = getGenotypeCost getSteinerTree
+   let private createRank edgeWeight terminals =
+      let buildSteinerTree = SteinerTree.builder edgeWeight terminals
+      let genotypeCost = Genotype.activeGenes >> buildSteinerTree >> SteinerTree.cost
+      rank genotypeCost
+
+   let private createGeneticAlgorithm randNext rank =
       let runRoulette = Roulette.Factory.createRun randNext 100000
       let select = Population.selectParents runRoulette
       let cross = Population.Factory.createCross 0.95 randNext
       let mutate = Population.Factory.createMutate 0.05 randNext
-      let rank = rankPopulation getCost
-      let algorithm = geneticAlgorithm select cross mutate rank
-      let next = nextPopulation rank algorithm bestForWorst
-      evaluatePopulation next
+      select >> cross >> mutate >> rank
+
+   let createEvaluate randNext edgeWeight terminals =
+      let rank = createRank edgeWeight terminals
+      let geneticAlgorithm = createGeneticAlgorithm randNext rank
+      let next = next rank geneticAlgorithm bestForWorst
+      evaluate next

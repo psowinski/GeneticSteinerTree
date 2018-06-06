@@ -18,7 +18,7 @@ let createPopulation populationSize (vertices: Vertex seq) countTerminals =
    let randNext = Utilities.createRandNext ()
    let prob = Utilities.parcentProbabilityOfGeneActivation (vertices |> Seq.length) countTerminals
    let geneActivator _ = randNext(100) < prob
-   Population.createPopulation geneActivator vertices populationSize
+   Population.create geneActivator vertices populationSize
 
 let calculate (getEdgeCost: Vertex * Vertex -> Weight) (forks: Vertex seq) (terminals: Vertex seq) iterations =
    ()

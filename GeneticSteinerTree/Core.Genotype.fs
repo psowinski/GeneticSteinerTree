@@ -1,4 +1,5 @@
 ﻿module GeneticSteinerTree.Core.Genotype
+open GeneticSteinerTree.Core.Graph
 
 /// activator - returns true if vertex should be active gene otherwise false
 let create activator genes =
@@ -26,3 +27,7 @@ let mutate position (Genotype genes) =
 
 let length (Genotype genes) =
    List.length genes
+
+let activeGenes (Genotype genes) = 
+   genes |> List.choose (function | Active v -> Some v | _ -> None)
+      

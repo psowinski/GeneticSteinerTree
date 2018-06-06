@@ -1,5 +1,6 @@
-﻿module GeneticSteinerTree.Core.Graph
+﻿module GeneticSteinerTree.Core.Graph.SteinerTree
 open GeneticSteinerTree.Extensions
+open GeneticSteinerTree.Core.Data
 
 let combinationsWithoutRepetition2ofN elements =
    let pairHeadWithTail = function
@@ -7,8 +8,8 @@ let combinationsWithoutRepetition2ofN elements =
       | x::xs -> xs |> Seq.map (fun y -> x, y)
    List.collectTail pairHeadWithTail elements
 
-let createGraph getEdgeWeight edges : Graph =
-   edges |> List.choose (fun (u, v) -> match getEdgeWeight (u, v) with
+let createGraph edgeWeight edges : Graph =
+   edges |> List.choose (fun (u, v) -> match edgeWeight (u, v) with
                                        | Some w -> Some (u, v, w)
                                        | _ -> None)
 
@@ -44,10 +45,10 @@ let minimalSpanigTree (edges: Graph) : Graph option =
 
    mst (set [first]) (countAllVertices - 1) [] sortedEdges
 
-let private getBestEdgeToGraph getEdgeWeight (edges: Graph) (terminal: Vertex) =
+let private getBestEdgeToGraph edgeWeight (edges: Graph) (terminal: Vertex) =
    let possibleEdges = edges |> Seq.collect (fun (u, v, _) -> [u; v])
                              |> Seq.distinct
-                             |> Seq.choose (fun vertex -> match getEdgeWeight (terminal, vertex) with
+                             |> Seq.choose (fun vertex -> match edgeWeight (terminal, vertex) with
                                                           | Some w -> Some (terminal, vertex, w)
                                                           | _ -> None)
                              |> List.ofSeq
@@ -56,8 +57,8 @@ let private getBestEdgeToGraph getEdgeWeight (edges: Graph) (terminal: Vertex) =
    else possibleEdges |> List.minBy (fun (_, _, w) -> w) 
                       |> Some
 
-let addTerminalsToGraph getEdgeWeight (terminals: Vertex list) (edges: Graph): Graph option =
-   let getBestEdgeToGraph = getBestEdgeToGraph getEdgeWeight edges
+let addTerminalsToGraph edgeWeight (terminals: Vertex list) (edges: Graph): Graph option =
+   let getBestEdgeToGraph = getBestEdgeToGraph edgeWeight edges
    let bestEdges = terminals |> List.map getBestEdgeToGraph
 
    if bestEdges |> List.tryFind Option.isNone |> Option.isSome
@@ -86,19 +87,20 @@ let reduceGraph (getDeadends: Graph -> Vertex list) (edges: Graph) =
       else edges
    reduce edges
 
-let getSteinerTree combinationsWithoutRepetition2ofN createGraph addTerminalsToGraph reduceGraph minimalSpanigTree =
+let private steinerTreeAlgorithm combinationsWithoutRepetition2ofN createGraph addTerminalsToGraph reduceGraph minimalSpanigTree =
    combinationsWithoutRepetition2ofN
    >> createGraph
    >> addTerminalsToGraph
    >> Option.map reduceGraph
    >> Option.bind minimalSpanigTree
 
-module Factory =
-   let createGetSteinerTree getEdgeWeight terminals vertices =
-      getSteinerTree
-         combinationsWithoutRepetition2ofN 
-         (createGraph getEdgeWeight)
-         (addTerminalsToGraph getEdgeWeight terminals)
-         (reduceGraph (getDeadends terminals))
-         minimalSpanigTree 
-         vertices
+let builder edgeWeight terminals: (Vertex list -> SteinerTree) =
+   steinerTreeAlgorithm
+      combinationsWithoutRepetition2ofN 
+      (createGraph edgeWeight)
+      (addTerminalsToGraph edgeWeight terminals)
+      (reduceGraph (getDeadends terminals))
+      minimalSpanigTree
+
+let cost (steinerTree: SteinerTree) : Weight = 
+   steinerTree |> Option.map (List.fold (fun acc (_, _, w) -> acc + w) 0.0)
