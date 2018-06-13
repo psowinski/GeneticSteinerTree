@@ -1,10 +1,9 @@
 ﻿module GeneticSteinerTree.Core.Genotype
 open GeneticSteinerTree.Core.Graph
 
-/// activator - returns true if vertex should be active gene otherwise false
-let create activator vertices =
+let create geneActivator vertices =
    let createGene vertex =
-      if activator vertex 
+      if geneActivator vertex 
       then Active vertex 
       else Inactive vertex
    vertices |> Seq.map createGene |> List.ofSeq |> Genotype

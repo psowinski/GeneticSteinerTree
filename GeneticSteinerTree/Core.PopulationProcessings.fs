@@ -18,41 +18,46 @@ let rank genotypeCost (Population genotypes) =
    |> List.map (fun genotype -> genotype, genotypeCost genotype) 
    |> RankedPopulation
 
+let private weightToFloat (_, w) = match w with
+                                   | Some v -> v
+                                   | _ -> Core.float.MaxValue
+
 let bestForWorst (RankedPopulation current) (RankedPopulation next) =
    List.append current next
-   |> List.sortBy (fun (_, w) -> match w with
-                                 | Some v -> v
-                                 | _ -> Core.float.MaxValue)
+   |> List.sortBy weightToFloat
    |> List.take (List.length current)
 
-let next ranker algorithm bestsSelector population =
-   let ranked = population |> ranker
-   ranked 
+let next algorithm selector rankedPopulation =
+   rankedPopulation
    |> algorithm 
-   |> bestsSelector ranked
-   |> List.map (fun (genotype, _) -> genotype) 
-   |> Population
+   |> selector rankedPopulation
+   |> RankedPopulation
 
 let evaluate next iterations population =
    let final = seq { 1 .. iterations }
                |> Seq.fold (fun acc _ -> next acc) population
    final
 
+let best rankdPopulation =
+   let best = rankdPopulation
+              |> (fun (RankedPopulation list) -> list |> List.minBy weightToFloat) 
+              |> (fun (genotype, _) -> genotype)  
+   best
+
 module Factory = 
-   let private createRank edgeWeight terminals =
+   let createRanker edgeWeight terminals =
       let buildSteinerTree = SteinerTree.builder edgeWeight terminals
       let genotypeCost = Genotype.activeGenes >> buildSteinerTree >> SteinerTree.cost
       rank genotypeCost
 
-   let private createGeneticAlgorithm randNext rank =
+   let private createGeneticAlgorithm randNext =
       let runRoulette = Roulette.Factory.createRun randNext 100000
       let select = Population.selectParents runRoulette
       let cross = Population.Factory.createCross 0.95 randNext
       let mutate = Population.Factory.createMutate 0.05 randNext
-      select >> cross >> mutate >> rank
+      select >> cross >> mutate
 
-   let createEvaluate randNext edgeWeight terminals =
-      let rank = createRank edgeWeight terminals
-      let geneticAlgorithm = createGeneticAlgorithm randNext rank
-      let next = next rank geneticAlgorithm bestForWorst
+   let createEvaluate randNext ranker =
+      let algorithm = createGeneticAlgorithm randNext >> ranker
+      let next = next algorithm bestForWorst
       evaluate next

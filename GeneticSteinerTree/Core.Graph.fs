@@ -56,5 +56,8 @@ let reduce (getDeadends: Graph -> Vertex list) (edges: Graph) =
       else edges
    reduce edges
 
+let edges (graph: Graph) =
+   graph |> List.map (fun (u, v, _) -> u, v)
+
 module Factory =
    let  createReduce terminals = reduce (getDeadends terminals)
