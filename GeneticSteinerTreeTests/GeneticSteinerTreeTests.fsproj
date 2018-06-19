@@ -73,6 +73,8 @@
     <Compile Include="Core.RouletteShould.fs" />
     <Content Include="packages.config" />
     <Compile Include="Core.PopulationOperatorsShould.fs" />
+    <Compile Include="Core.PopulationProcessingShould.fs" />
+    <Compile Include="GeneticShould.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />

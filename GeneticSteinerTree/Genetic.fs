@@ -49,9 +49,8 @@ module GeneticSolver =
       let geneActivator _ = randNext(100) < prob
       geneActivator
 
-   let createProblem createGeneActivator createPopulation populationSize edgeWeight vertices terminals =
-      let geneActivator = createGeneActivator (Seq.length vertices) (Seq.length terminals)
-      let population = createPopulation geneActivator vertices populationSize
+   let createProblem createPopulation populationSize edgeWeight vertices terminals =
+      let population = createPopulation vertices populationSize
       InitialProblem { 
          population = population;
          terminals = terminals |> List.ofSeq;
@@ -74,7 +73,9 @@ module GeneticSolver =
 
 [<CompiledName("CreateProblem")>]
 let create populationSize (edgeWeight: Vertex * Vertex -> Weight) (intersections: Vertex seq) (terminals: Vertex seq) =
-   let createProblem' = GeneticSolver.createProblem (GeneticSolver.createGeneActivator (Randomizer.createRandNext ())) Population.create
+   let geneActivator = GeneticSolver.createGeneActivator (Randomizer.createRandNext ()) (Seq.length intersections) (Seq.length terminals)
+   let createPopulation = Population.Factory.createCreate geneActivator 
+   let createProblem' = GeneticSolver.createProblem createPopulation
    createProblem' populationSize edgeWeight intersections terminals
 
 [<CompiledName("CalculateProblem")>]

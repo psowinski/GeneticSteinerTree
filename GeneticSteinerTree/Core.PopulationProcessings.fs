@@ -7,10 +7,10 @@ open GeneticSteinerTree.Core.Graph
 open Roulette
 open Microsoft.FSharp
 
-let create geneActivator genes size =
+let create createGenotype genes size =
    let alignToEven x = if x % 2 = 0 then x else x + 1
    let size = if size < 2 then 2 else (alignToEven size)
-   let genotypes = List.init size (fun _ -> Genotype.create geneActivator genes)
+   let genotypes = List.init size (fun _ -> createGenotype genes)
    Population genotypes
 
 let rank genotypeCost (Population genotypes) =
@@ -44,7 +44,13 @@ let best rankdPopulation =
               |> (fun (genotype, _) -> genotype)  
    best
 
+let length (Population list) =
+   List.length list
+
 module Factory = 
+   let createCreate geneActivator =
+      create (Genotype.create geneActivator)
+
    let createRanker edgeWeight terminals =
       let buildSteinerTree = SteinerTree.builder edgeWeight terminals
       let genotypeCost = Genotype.activeGenes >> buildSteinerTree >> SteinerTree.cost
